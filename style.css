@@ -1,0 +1,47 @@
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.textarea {
+  width: 84%;
+  height: 30vh;
+  margin-bottom: 15px;
+}
+
+.keyboard {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  max-width: 800px;
+  
+}
+
+.keyboard__key {
+  display: inline-flex;
+  height: 3rem;
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  border-radius: 10px;
+  margin: 3px auto;
+  justify-content: center;
+  align-items: center;
+}
+
+.keyboard__key_regular {
+  width: 3rem;
+}
+
+.keyboard__key_wide {
+  width: 5rem;
+}
+
+.keyboard__key_extra-wide {
+  width: 7rem;
+}
+
+.keyboard__key_space {
+  width: 20rem;
+}
+
