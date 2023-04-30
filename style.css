@@ -19,6 +19,10 @@ body {
   
 }
 
+.keyboard__key.pressed {
+  filter: brightness(0.8);
+}
+
 .keyboard__key {
   display: inline-flex;
   height: 3rem;
@@ -27,6 +31,7 @@ body {
   margin: 3px auto;
   justify-content: center;
   align-items: center;
+  filter: none;
 }
 
 .keyboard__key_regular {

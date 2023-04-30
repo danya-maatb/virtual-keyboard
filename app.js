@@ -75,12 +75,20 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('del');
   }
 
-  // setup elements
+  function keyPress(key) {
+    key.classList.add('pressed');
+    setTimeout(() => {
+      key.classList.remove('pressed');
+    }, 100);
+  }
 
+  // setup elements
   function createKeyboard() {
     let i = 0;
+    const keys = [];
     keyLayout.forEach((element) => {
       const key = document.createElement('button');
+      keys.push(key);
       key.classList.add('keyboard__key');
       key.innerHTML = element;
       if (element === 'backspace' || element === 'enter' || element === 'lShift' || element === 'caps lock') {
@@ -100,10 +108,21 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       key.classList.add(keyLayoutFunctional[i]);
+      key.addEventListener('click', () => {
+        textarea.value += key.innerHTML;
+        keyPress(key);
+      });
       i += 1;
     });
 
     keyboard.classList.add('keyboard');
+    document.addEventListener('keydown', (event) => {
+      for (let j = 0; j < keys.length; j += 1) {
+        if (keys[j].classList.contains(event.code)) {
+          keyPress(keys[j]);
+        }
+      }
+    });
   }
 
   textarea.classList.add('textarea');
