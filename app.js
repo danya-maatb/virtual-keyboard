@@ -14,18 +14,66 @@ document.addEventListener('DOMContentLoaded', () => {
     'lShift', 'sl', 'z', 'x', 'c', 'v', 'b', 'n', 'm', '.', ',', '/', 'arrorUp', 'rShift',
     'lCtrl', 'win', 'lAlt', 'space', 'rAlt', 'rCtrl', 'arrowLeft', 'arrowDown', 'arrowRight',
   ];
+
+  const keyLayoutFunctional = [
+    'Backquote', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9', 'Digit0', 'Minus', 'Equal', 'Backspace',
+    'Tab', 'KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT', 'KeyY', 'KeyU', 'KeyI', 'KeyO', 'KeyP', 'BracketLeft', 'BracketRight', 'Backslash', 'Delete',
+    'CapsLock', 'KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyG', 'KeyH', 'KeyJ', 'KeyK', 'KeyL', 'Semicolon', 'Quote', 'Enter',
+    'ShiftLeft', 'IntlBackslash', 'KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyN', 'KeyM', 'Period', 'Comma', 'Slash', 'ArrowUp', 'ShiftRight',
+    'ControlLeft', 'MetaLeft', 'AltLeft', 'Space', 'AltRight', 'ControlRight', 'ArrowLeft', 'ArrowDown', 'ArrowRight',
+  ];
+
   let keyLayout = keyLayoutEN;
-  const caps = false;
+  let caps = false;
 
   const keyboard = document.createElement('div');
   const textarea = document.createElement('textarea');
+  textarea.disabled = true;
 
   function createLineBreak() {
     const brake = document.createElement('br');
     return brake;
   }
+
+  // event handlers
+
+  function switchLayout() {
+    if (keyLayout === keyLayoutEN) {
+      keyLayout = keyLayoutRU;
+    } else {
+      keyLayout = keyLayoutEN;
+    }
+
+    while (keyboard.childNodes.length !== 0) {
+      keyboard.firstChild.remove();
+    }
+  }
+
+  function switchCase() {
+    if (caps === false) {
+      caps = true;
+    } else {
+      caps = false;
+    }
+
+    console.log(`switchCase ${caps}`);
+  }
+
+  document.addEventListener('keyup', (event) => {
+    if (event.key === 'Shift') {
+      switchCase();
+    }
+  })
+
+
+  function deleteCharacter() {
+    console.log('del');
+  }
+  
   // setup elements
+
   function createKeyboard() {
+    let i = 0;
     keyLayout.forEach((element) => {
       const key = document.createElement('button');
       key.classList.add('keyboard__key');
@@ -45,40 +93,38 @@ document.addEventListener('DOMContentLoaded', () => {
       if (element === 'backspace' || element === 'del' || element === 'enter' || element === 'rShift' || element === 'arrowRight') {
         keyboard.appendChild(createLineBreak());
       }
+
+      key.classList.add(keyLayoutFunctional[i]);
+      i += 1;
     });
+
     keyboard.classList.add('keyboard');
   }
 
   textarea.classList.add('textarea');
   document.addEventListener('keydown', (event) => {
-    const text = event.key;
-    textarea.value += text;
+    if (event.key === 'Backspace') {
+      deleteCharacter();
+    } else if (event.key === 'CapsLock') {
+      switchCase();
+    } else if (event.key === 'Tab') {
+      textarea.value += '   ';
+    } else if (event.key === 'Enter') {
+      textarea.value += '\r\n';
+    } else if (event.key === 'Shift') {
+      switchCase();
+    } else if (event.location === 0) {
+      textarea.value += event.key;
+    }
+
+    if (event.altKey && event.ctrlKey) {
+      switchLayout();
+      createKeyboard();
+    }
   });
 
-  createKeyboard();
   // add to DOM
-
+  createKeyboard();
   document.body.appendChild(textarea);
   document.body.appendChild(keyboard);
-
-  // event handlers
-
-  function switchLayout() {
-    if (keyLayout === keyLayoutEN) {
-      keyLayout = keyLayoutRU;
-    } else {
-      keyLayout = keyLayoutEN;
-    }
-
-    while (keyboard.childNodes.length !== 0) {
-      keyboard.firstChild.remove();
-    }
-    createKeyboard();
-  }
-
-  function switchCase() {
-    console.log(`switchCase ${caps}`);
-  }
-
-
 });
