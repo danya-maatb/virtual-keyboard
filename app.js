@@ -15,9 +15,10 @@ document.addEventListener('DOMContentLoaded', () => {
     'lCtrl', 'win', 'lAlt', 'space', 'rAlt', 'rCtrl', 'arrowLeft', 'arrowDown', 'arrowRight',
   ];
   let keyLayout = keyLayoutEN;
-  let caps = false;
+  const caps = false;
 
   const keyboard = document.createElement('div');
+  const textarea = document.createElement('textarea');
 
   function createLineBreak() {
     const brake = document.createElement('br');
@@ -47,9 +48,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     keyboard.classList.add('keyboard');
   }
+
+  textarea.classList.add('textarea');
+  document.addEventListener('keydown', (event) => {
+    const text = event.key;
+    textarea.value += text;
+  });
+
   createKeyboard();
   // add to DOM
 
+  document.body.appendChild(textarea);
   document.body.appendChild(keyboard);
 
   // event handlers
@@ -66,4 +75,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     createKeyboard();
   }
+
+  function switchCase() {
+    console.log(`switchCase ${caps}`);
+  }
+
+
 });
