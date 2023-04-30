@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   const keyLayoutRU = [
-    '~', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'backspace',
+    'ё', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'backspace',
     'tab', 'й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з', 'х', 'ъ', 'sl', 'del',
     'caps lock', 'ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д', 'ж', 'э', 'enter',
     'lShift', 'sl', 'я', 'ч', 'с', 'м', 'и', 'т', 'ь', 'б', 'ю', '/', 'arrorUp', 'rShift',
@@ -23,6 +23,22 @@ document.addEventListener('DOMContentLoaded', () => {
     'ControlLeft', 'MetaLeft', 'AltLeft', 'Space', 'AltRight', 'ControlRight', 'ArrowLeft', 'ArrowDown', 'ArrowRight',
   ];
 
+  const keyLayoutRUUpperCase = [
+    'Ё', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'backspace',
+    'tab', 'Й', 'Ц', 'У', 'К', 'Е', 'Н', 'Г', 'Ш', 'Щ', 'З', 'Х', 'Ъ', 'sl', 'del',
+    'caps lock', 'Ф', 'Ы', 'В', 'А', 'П', 'Р', 'О', 'Л', 'Д', 'Ж', 'Э', 'enter',
+    'lShift', 'sl', 'Я', 'Ч', 'С', 'М', 'И', 'Т', 'Ь', 'Б', 'Ю', '/', 'arrorUp', 'rShift',
+    'lCtrl', 'win', 'lAlt', 'space', 'rAlt', 'rCtrl', 'arrowLeft', 'arrowDown', 'arrowRight',
+  ];
+
+  const keyLayoutENUpperCase = [
+    '`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'backspace',
+    'tab', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '[', ']', 'sl', 'del',
+    'caps lock', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';', 'ap', 'enter',
+    'lShift', 'sl', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '.', 'comma', '/', 'arrorUp', 'rShift',
+    'lCtrl', 'win', 'lAlt', 'space', 'rAlt', 'rCtrl', 'arrowLeft', 'arrowDown', 'arrowRight',
+  ];
+
   let keyLayout;
   if (localStorage.getItem('keyLayout') === null) {
     keyLayout = keyLayoutEN;
@@ -30,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     keyLayout = localStorage.getItem('keyLayout').split(',');
   }
   let caps = false;
+  let isShiftKeyPressed = false;
 
   const keyboard = document.createElement('div');
   const textarea = document.createElement('textarea');
@@ -58,18 +75,24 @@ document.addEventListener('DOMContentLoaded', () => {
   function switchCase() {
     if (caps === false) {
       caps = true;
+      if (keyLayout === keyLayoutEN) {
+        keyLayout = keyLayoutENUpperCase;
+      } else {
+        keyLayout = keyLayoutRUUpperCase;
+      }
     } else {
       caps = false;
+      if (keyLayout === keyLayoutENUpperCase) {
+        keyLayout = keyLayoutEN;
+      } else {
+        keyLayout = keyLayoutRU;
+      }
     }
-
+    while (keyboard.childNodes.length !== 0) {
+      keyboard.firstChild.remove();
+    }
     console.log(`switchCase ${caps}`);
   }
-
-  document.addEventListener('keyup', (event) => {
-    if (event.key === 'Shift') {
-      switchCase();
-    }
-  });
 
   function deleteCharacter() {
     console.log('del');
@@ -77,15 +100,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function keyPress(key) {
     key.classList.add('pressed');
-    setTimeout(() => {
-      key.classList.remove('pressed');
-    }, 100);
+  }
+
+  function keyRelease(key) {
+    key.classList.remove('pressed');
   }
 
   // setup elements
+  const keys = [];
   function createKeyboard() {
     let i = 0;
-    const keys = [];
+
     keyLayout.forEach((element) => {
       const key = document.createElement('button');
       keys.push(key);
@@ -108,9 +133,32 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       key.classList.add(keyLayoutFunctional[i]);
-      key.addEventListener('click', () => {
+      key.addEventListener('mousedown', () => {
         textarea.value += key.innerHTML;
-        keyPress(key);
+
+        if (key.classList.contains('ShiftLeft') || key.classList.contains('ShiftRight')) {
+          isShiftKeyPressed = true;
+          switchCase();
+          createKeyboard();
+          document.querySelector('.ShiftLeft').classList.add('pressed');
+        } else if (key.classList.contains('CapsLock')) {
+          switchCase();
+          createKeyboard();
+          document.querySelector('.CapsLock').classList.add('pressed');
+        } else {
+          keyPress(key);
+        }
+      });
+
+      key.addEventListener('mouseup', () => {
+        if (key.classList.contains('ShiftLeft') || key.classList.contains('ShiftRight')) {
+          isShiftKeyPressed = false;
+          switchCase();
+          createKeyboard();
+          document.querySelector('.ShiftLeft').classList.remove('pressed');
+        } else {
+          keyRelease(key);
+        }
       });
       i += 1;
     });
@@ -123,6 +171,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     });
+
+    document.addEventListener('keyup', (event) => {
+      for (let j = 0; j < keys.length; j += 1) {
+        if (keys[j].classList.contains(event.code)) {
+          keyRelease(keys[j]);
+        }
+      }
+    });
   }
 
   textarea.classList.add('textarea');
@@ -131,12 +187,15 @@ document.addEventListener('DOMContentLoaded', () => {
       deleteCharacter();
     } else if (event.key === 'CapsLock') {
       switchCase();
+      createKeyboard();
     } else if (event.key === 'Tab') {
       textarea.value += '   ';
     } else if (event.key === 'Enter') {
       textarea.value += '\r\n';
-    } else if (event.key === 'Shift') {
+    } else if (event.key === 'Shift' && isShiftKeyPressed === false) {
+      isShiftKeyPressed = true;
       switchCase();
+      createKeyboard();
     } else if (event.location === 0 && !(event.key === 'Escape' || event.key === 'F1' || event.key === 'F2' || event.key === 'F3' || event.key === 'F4' || event.key === 'F5' || event.key === 'F6' || event.key === 'F7' || event.key === 'F8' || event.key === 'F9' || event.key === 'F10' || event.key === 'F11' || event.key === 'F12')) {
       textarea.value += event.key;
     }
@@ -147,8 +206,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  document.addEventListener('keyup', (event) => {
+    if (event.key === 'Shift' && isShiftKeyPressed === true) {
+      switchCase();
+      createKeyboard();
+      document.querySelector('.ShiftLeft').classList.remove('pressed');
+      isShiftKeyPressed = false;
+    }
+  });
+
   // add to DOM
   createKeyboard();
   document.body.appendChild(textarea);
   document.body.appendChild(keyboard);
+  document.body.appendChild();
 });
