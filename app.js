@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     '~', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'backspace',
     'tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', 'sl', 'del',
     'caps lock', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', 'ap', 'enter',
-    'lShift', 'sl', 'z', 'x', 'c', 'v', 'b', 'n', 'm', '.', ',', '/', 'arrorUp', 'rShift',
+    'lShift', 'sl', 'z', 'x', 'c', 'v', 'b', 'n', 'm', '.', 'comma', '/', 'arrorUp', 'rShift',
     'lCtrl', 'win', 'lAlt', 'space', 'rAlt', 'rCtrl', 'arrowLeft', 'arrowDown', 'arrowRight',
   ];
 
@@ -23,12 +23,17 @@ document.addEventListener('DOMContentLoaded', () => {
     'ControlLeft', 'MetaLeft', 'AltLeft', 'Space', 'AltRight', 'ControlRight', 'ArrowLeft', 'ArrowDown', 'ArrowRight',
   ];
 
-  let keyLayout = keyLayoutEN;
+  let keyLayout;
+  if (localStorage.getItem('keyLayout') === null) {
+    keyLayout = keyLayoutEN;
+  } else {
+    keyLayout = localStorage.getItem('keyLayout').split(',');
+  }
   let caps = false;
 
   const keyboard = document.createElement('div');
   const textarea = document.createElement('textarea');
-  textarea.disabled = true;
+  textarea.readOnly = true;
 
   function createLineBreak() {
     const brake = document.createElement('br');
@@ -47,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     while (keyboard.childNodes.length !== 0) {
       keyboard.firstChild.remove();
     }
+    localStorage.setItem('keyLayout', keyLayout.toString());
   }
 
   function switchCase() {
@@ -63,13 +69,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (event.key === 'Shift') {
       switchCase();
     }
-  })
-
+  });
 
   function deleteCharacter() {
     console.log('del');
   }
-  
+
   // setup elements
 
   function createKeyboard() {
@@ -113,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
       textarea.value += '\r\n';
     } else if (event.key === 'Shift') {
       switchCase();
-    } else if (event.location === 0) {
+    } else if (event.location === 0 && !(event.key === 'Escape' || event.key === 'F1' || event.key === 'F2' || event.key === 'F3' || event.key === 'F4' || event.key === 'F5' || event.key === 'F6' || event.key === 'F7' || event.key === 'F8' || event.key === 'F9' || event.key === 'F10' || event.key === 'F11' || event.key === 'F12')) {
       textarea.value += event.key;
     }
 
