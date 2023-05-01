@@ -285,9 +285,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  const instruction = document.createElement('p');
+  instruction.innerHTML = 'Клавиатура создана в операционной системе Windows <br> Для переключения языка комбинация: левыe ctrl + alt';
   // add to DOM
   createKeyboard();
   document.body.appendChild(textarea);
   document.body.appendChild(keyboard);
-  document.body.appendChild();
+  document.body.appendChild(instruction);
 });
