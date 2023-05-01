@@ -62,6 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function switchLayout() {
     if (keyLayout === keyLayoutEN) {
       keyLayout = keyLayoutRU;
+    } else if (keyLayout === keyLayoutENUpperCase) {
+      keyLayout = keyLayoutRUUpperCase;
+    } else if (keyLayout === keyLayoutRUUpperCase) {
+      keyLayout = keyLayoutENUpperCase;
     } else {
       keyLayout = keyLayoutEN;
     }
@@ -91,11 +95,10 @@ document.addEventListener('DOMContentLoaded', () => {
     while (keyboard.childNodes.length !== 0) {
       keyboard.firstChild.remove();
     }
-    console.log(`switchCase ${caps}`);
   }
 
   function deleteCharacter() {
-    console.log('del');
+    textarea.value = textarea.value.slice(0, textarea.value.length - 1);
   }
 
   function keyPress(key) {
@@ -134,28 +137,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
       key.classList.add(keyLayoutFunctional[i]);
       key.addEventListener('mousedown', () => {
-        textarea.value += key.innerHTML;
-
-        if (key.classList.contains('ShiftLeft') || key.classList.contains('ShiftRight')) {
+        if (key.classList.contains('ShiftLeft')) {
           isShiftKeyPressed = true;
           switchCase();
           createKeyboard();
           document.querySelector('.ShiftLeft').classList.add('pressed');
+        } else if (key.classList.contains('ShiftRight')) {
+          isShiftKeyPressed = true;
+          switchCase();
+          createKeyboard();
+          document.querySelector('.ShiftRight').classList.add('pressed');
         } else if (key.classList.contains('CapsLock')) {
           switchCase();
           createKeyboard();
           document.querySelector('.CapsLock').classList.add('pressed');
+        } else if (key.classList.contains('Tab')) {
+          textarea.value += '   ';
+          keyPress(key);
+        } else if (key.classList.contains('Enter')) {
+          textarea.value += '\r\n';
+          keyPress(key);
+        } else if (key.classList.contains('Delete') || key.classList.contains('Backspace')) {
+          deleteCharacter();
+          keyPress(key);
         } else {
           keyPress(key);
+          textarea.value += key.innerHTML;
         }
       });
 
       key.addEventListener('mouseup', () => {
-        if (key.classList.contains('ShiftLeft') || key.classList.contains('ShiftRight')) {
+        if (key.classList.contains('ShiftLeft')) {
           isShiftKeyPressed = false;
           switchCase();
           createKeyboard();
           document.querySelector('.ShiftLeft').classList.remove('pressed');
+        } else if (key.classList.contains('ShiftRight')) {
+          isShiftKeyPressed = true;
+          switchCase();
+          createKeyboard();
+          document.querySelector('.ShiftRight').classList.remove('pressed');
         } else {
           keyRelease(key);
         }
@@ -183,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   textarea.classList.add('textarea');
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Backspace') {
+    if (event.key === 'Backspace' || event.key === 'Delete') {
       deleteCharacter();
     } else if (event.key === 'CapsLock') {
       switchCase();
