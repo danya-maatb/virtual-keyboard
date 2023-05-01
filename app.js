@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'ё', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'backspace',
     'tab', 'й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з', 'х', 'ъ', 'sl', 'del',
     'caps lock', 'ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д', 'ж', 'э', 'enter',
-    'lShift', 'sl', 'я', 'ч', 'с', 'м', 'и', 'т', 'ь', 'б', 'ю', '/', 'arrorUp', 'rShift',
+    'lShift', 'sl', 'я', 'ч', 'с', 'м', 'и', 'т', 'ь', 'б', 'ю', '/', 'arrowUp', 'rShift',
     'lCtrl', 'win', 'lAlt', 'space', 'rAlt', 'rCtrl', 'arrowLeft', 'arrowDown', 'arrowRight',
   ];
 
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     '~', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'backspace',
     'tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', 'sl', 'del',
     'caps lock', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', 'ap', 'enter',
-    'lShift', 'sl', 'z', 'x', 'c', 'v', 'b', 'n', 'm', '.', 'comma', '/', 'arrorUp', 'rShift',
+    'lShift', 'sl', 'z', 'x', 'c', 'v', 'b', 'n', 'm', '.', 'comma', '/', 'arrowUp', 'rShift',
     'lCtrl', 'win', 'lAlt', 'space', 'rAlt', 'rCtrl', 'arrowLeft', 'arrowDown', 'arrowRight',
   ];
 
@@ -24,18 +24,18 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
 
   const keyLayoutRUUpperCase = [
-    'Ё', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'backspace',
+    'Ё', '!', '"', '№', ';', '%', ':', '?', '*', '(', ')', '_', '+', 'backspace',
     'tab', 'Й', 'Ц', 'У', 'К', 'Е', 'Н', 'Г', 'Ш', 'Щ', 'З', 'Х', 'Ъ', 'sl', 'del',
     'caps lock', 'Ф', 'Ы', 'В', 'А', 'П', 'Р', 'О', 'Л', 'Д', 'Ж', 'Э', 'enter',
-    'lShift', 'sl', 'Я', 'Ч', 'С', 'М', 'И', 'Т', 'Ь', 'Б', 'Ю', '/', 'arrorUp', 'rShift',
+    'lShift', 'sl', 'Я', 'Ч', 'С', 'М', 'И', 'Т', 'Ь', 'Б', 'Ю', '/', 'arrowUp', 'rShift',
     'lCtrl', 'win', 'lAlt', 'space', 'rAlt', 'rCtrl', 'arrowLeft', 'arrowDown', 'arrowRight',
   ];
 
   const keyLayoutENUpperCase = [
-    '`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'backspace',
+    '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', 'backspace',
     'tab', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '[', ']', 'sl', 'del',
     'caps lock', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';', 'ap', 'enter',
-    'lShift', 'sl', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '.', 'comma', '/', 'arrorUp', 'rShift',
+    'lShift', 'sl', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '.', 'comma', '/', 'arrowUp', 'rShift',
     'lCtrl', 'win', 'lAlt', 'space', 'rAlt', 'rCtrl', 'arrowLeft', 'arrowDown', 'arrowRight',
   ];
 
@@ -153,15 +153,20 @@ document.addEventListener('DOMContentLoaded', () => {
           document.querySelector('.CapsLock').classList.add('pressed');
         } else if (key.classList.contains('Tab')) {
           textarea.value += '   ';
-          keyPress(key);
+          key.classList.add('pressed');
         } else if (key.classList.contains('Enter')) {
           textarea.value += '\r\n';
-          keyPress(key);
+          key.classList.add('pressed');
         } else if (key.classList.contains('Delete') || key.classList.contains('Backspace')) {
           deleteCharacter();
-          keyPress(key);
+          key.classList.add('pressed');
+        } else if (key.classList.contains('MetaLeft') || key.classList.contains('ControlLeft') || key.classList.contains('ControlRight') || key.classList.contains('AltLeft') || key.classList.contains('AltRight')) {
+          key.classList.add('pressed');
+        } else if (key.classList.contains('Space')) {
+          key.classList.add('pressed');
+          textarea.value += ' ';
         } else {
-          keyPress(key);
+          key.classList.add('pressed');
           textarea.value += key.innerHTML;
         }
       });
@@ -178,9 +183,45 @@ document.addEventListener('DOMContentLoaded', () => {
           createKeyboard();
           document.querySelector('.ShiftRight').classList.remove('pressed');
         } else {
-          keyRelease(key);
+          key.classList.remove('pressed');
         }
       });
+
+      if (key.innerHTML === 'lCtrl' || key.innerHTML === 'rCtrl') {
+        key.innerHTML = 'Ctrl';
+      } else if (key.innerHTML === 'lShift' || key.innerHTML === 'rShift') {
+        key.innerHTML = 'Shift';
+      } else if (key.innerHTML === 'lAlt' || key.innerHTML === 'rAlt') {
+        key.innerHTML = 'Alt';
+      } else if (key.innerHTML === 'sl') {
+        key.innerHTML = '&#92;';
+      } else if (key.innerHTML === 'ap') {
+        key.innerHTML = '&apos;';
+      } else if (key.innerHTML === 'comma') {
+        key.innerHTML = ',';
+      } else if (key.innerHTML === 'space') {
+        key.innerHTML = 'Space';
+      } else if (key.innerHTML === 'caps lock') {
+        key.innerHTML = 'CapsLock';
+      } else if (key.innerHTML === 'enter') {
+        key.innerHTML = '&crarr; Enter';
+      } else if (key.innerHTML === 'tab') {
+        key.innerHTML = 'Tab';
+      } else if (key.innerHTML === 'del') {
+        key.innerHTML = 'Delete';
+      } else if (key.innerHTML === 'win') {
+        key.innerHTML = '&#x229e;Win';
+      } else if (key.innerHTML === 'backspace') {
+        key.innerHTML = 'Backspace';
+      } else if (key.innerHTML === 'arrowUp') {
+        key.innerHTML = '&#8679';
+      } else if (key.innerHTML === 'arrowLeft') {
+        key.innerHTML = '&#8678';
+      } else if (key.innerHTML === 'arrowRight') {
+        key.innerHTML = '&#8680';
+      } else if (key.innerHTML === 'arrowDown') {
+        key.innerHTML = '&#8681';
+      }
       i += 1;
     });
 
@@ -213,6 +254,14 @@ document.addEventListener('DOMContentLoaded', () => {
       textarea.value += '   ';
     } else if (event.key === 'Enter') {
       textarea.value += '\r\n';
+    } else if (event.key === 'ArrowUp') {
+      textarea.value += '⇧';
+    } else if (event.key === 'ArrowLeft') {
+      textarea.value += '⇦';
+    } else if (event.key === 'ArrowRight') {
+      textarea.value += '⇨';
+    } else if (event.key === 'ArrowDown') {
+      textarea.value += '⇩';
     } else if (event.key === 'Shift' && isShiftKeyPressed === false) {
       isShiftKeyPressed = true;
       switchCase();
